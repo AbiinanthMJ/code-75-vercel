@@ -4,7 +4,6 @@ const LANGUAGE_OPTIONS = [
   { id: 63, value: 'javascript', label: 'JavaScript (Node.js)' },
   { id: 62, value: 'java', label: 'Java' }
 ]
-
 export default function CodeEditor({ code, setCode, language, setLanguage, onRun, running, height = '400px', className = '' }) {
   return (
     <div className={`card mb-3 ${className}`} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -19,14 +18,14 @@ export default function CodeEditor({ code, setCode, language, setLanguage, onRun
           ))}
         </select>
 
-        <button className="btn btn-primary btn-sm ms-auto" onClick={onRun} disabled={running}>
+        <button className="btn btn-danger btn-sm ms-auto" onClick={onRun} disabled={running}>
           {running ? 'Running…' : 'Run Code'}
         </button>
       </div>
 
       <div className="card-body p-0 flex-grow-1" style={{ minHeight: 0 }}>
         <Editor
-          height="100%"
+          height="120%"
           defaultLanguage="javascript"
           language={language}
           theme="vs-dark"

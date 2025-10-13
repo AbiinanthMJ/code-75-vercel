@@ -1,9 +1,7 @@
 import ProblemList from '../components/ProblemList'
 import { useTheme } from '../contexts/ThemeContext'
-
 export default function Home() {
   const { isDark } = useTheme()
-
   return (
     <div className={`${isDark ? 'bg-dark text-light' : 'bg-light text-dark'} min-vh-100`}>
       <div className="container-fluid px-4 py-4">
