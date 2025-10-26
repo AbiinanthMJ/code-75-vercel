@@ -1,9 +1,10 @@
 import { Editor } from '@monaco-editor/react'
 
 const LANGUAGE_OPTIONS = [
-  { id: 63, value: 'javascript', label: 'JavaScript (Node.js)' },
-  { id: 62, value: 'java', label: 'Java' }
-]
+  { id: 63, value: "javascript", label: "JavaScript (Node.js)" },
+  { id: 62, value: "java", label: "Java" },
+  { id: 62, value: "c++", label: "c++" }
+];
 export default function CodeEditor({ code, setCode, language, setLanguage, onRun, running, height = '400px', className = '' }) {
   return (
     <div className={`card mb-3 ${className}`} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
