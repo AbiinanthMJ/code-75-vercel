@@ -45,7 +45,7 @@ export default function ProblemPage() {
 
   useEffect(() => {
     if (language === 'java') {
-      setCode(`class Solution {
+      setCode(`class Main {
     public static void main(String[] args) {
         System.out.println("Hello World!");
         System.out.println("Java code is working!");
@@ -333,15 +333,15 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
         <div className={`${isMobile ? 'p-2' : 'p-3'} d-flex flex-column`} style={{ 
           height: isMobile ? 'auto' : '100%',
           minHeight: isMobile ? 'auto' : '600px',
-          overflow: 'hidden'
+          overflow: isMobile ? 'visible' : 'hidden'
         }}>
           <div className={isMobile ? 'mb-3' : 'flex-grow-1 mb-3'} style={{ 
-            minHeight: isMobile ? '300px' : '400px',
+            minHeight: isMobile ? '250px' : '400px',
             height: isMobile ? 'auto' : '100%',
             maxHeight: isMobile ? 'none' : '100%',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden'
+            overflow: isMobile ? 'visible' : 'hidden'
           }}>
             <CodeEditor 
               code={code} 
@@ -350,7 +350,7 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
               setLanguage={setLanguage} 
               onRun={runAll} 
               running={runLoading} 
-              className="h-100" 
+              className={isMobile ? '' : 'h-100'} 
             />
           </div>
           <div className={isMobile ? '' : 'flex-shrink-0'} style={{ 
@@ -358,7 +358,7 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
             maxHeight: isMobile ? 'none' : '300px',
             display: 'flex', 
             flexDirection: 'column',
-            overflow: 'hidden'
+            overflow: isMobile ? 'visible' : 'hidden'
           }}>
             <TestResults results={runResults} loading={runLoading} />
           </div>
