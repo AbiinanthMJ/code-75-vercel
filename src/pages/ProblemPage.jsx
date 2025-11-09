@@ -21,6 +21,7 @@ export default function ProblemPage() {
   const [runResults, setRunResults] = useState([])
   const [leftPanelWidth, setLeftPanelWidth] = useState(40)
   const [isSolved, setIsSolved] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const isResizing = useRef(false)
 
   const rapidKey = import.meta.env.VITE_RAPIDAPI_KEY?.trim()
@@ -58,6 +59,17 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
     }
   }, [language])
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    if (isMobile) return // Don't enable resize on mobile
+    
     const move = e => {
       if (!isResizing.current) return
       const container = document.querySelector('.leetcode-layout')
@@ -78,8 +90,8 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'
     }
-  }, [isResizing.current])
-  const handleMouseDown = () => { isResizing.current = true }
+  }, [isResizing.current, isMobile])
+  const handleMouseDown = () => { if (!isMobile) isResizing.current = true }
 
   const wrapSource = (src, lang) => {
     if (lang === 'java') return src
@@ -219,14 +231,24 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
   }
 
   return (
-    <div className={`leetcode-layout ${isDark ? 'bg-dark' : 'bg-light'}`} style={{ display:'flex', height:'calc(100vh - 80px)' }}>
+    <div className={`leetcode-layout ${isDark ? 'bg-dark' : 'bg-light'}`} 
+         style={{ 
+           display: 'flex', 
+           flexDirection: isMobile ? 'column' : 'row',
+           height: isMobile ? 'auto' : 'calc(100vh - 80px)',
+           minHeight: isMobile ? '100vh' : 'calc(100vh - 80px)',
+           overflow: isMobile ? 'visible' : 'hidden'
+         }}>
       <div className="problem-panel" style={{ 
-        width:`${leftPanelWidth}%`, 
-        minWidth:300, 
-        maxWidth:'70%', 
-        borderRight:`1px solid ${isDark ? '#333' : '#e1e4e8'}`, 
-        overflow:'auto', 
-        backgroundColor: isDark ? '#1a1a1a' : '#f6f8fa' 
+        width: isMobile ? '100%' : `${leftPanelWidth}%`, 
+        minWidth: isMobile ? '100%' : 300, 
+        maxWidth: isMobile ? '100%' : '70%', 
+        borderRight: isMobile ? 'none' : `1px solid ${isDark ? '#333' : '#e1e4e8'}`,
+        borderBottom: isMobile ? `1px solid ${isDark ? '#333' : '#e1e4e8'}` : 'none',
+        overflow: 'auto', 
+        backgroundColor: isDark ? '#1a1a1a' : '#f6f8fa',
+        maxHeight: isMobile ? '50vh' : 'none',
+        height: isMobile ? 'auto' : '100%'
       }}>
         <div className="p-4">
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -289,22 +311,27 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
         </div>
       </div>
 
-      <div className="resize-handle" onMouseDown={handleMouseDown} style={{ 
-        width:4, 
-        cursor:'col-resize', 
-        flexShrink:0, 
-        background: isDark ? '#333' : '#e1e4e8' 
-      }} />
+      {!isMobile && (
+        <div className="resize-handle" onMouseDown={handleMouseDown} style={{ 
+          width:4, 
+          cursor:'col-resize', 
+          flexShrink:0, 
+          background: isDark ? '#333' : '#e1e4e8' 
+        }} />
+      )}
 
       <div className="editor-panel" style={{ 
-        flex:1, 
-        minWidth:400, 
+        flex: isMobile ? 'none' : 1, 
+        width: isMobile ? '100%' : 'auto',
+        minWidth: isMobile ? '100%' : 400, 
         display:'flex', 
         flexDirection:'column', 
-        background: isDark ? '#1a1a1a' : '#fff' 
+        background: isDark ? '#1a1a1a' : '#fff',
+        height: isMobile ? 'auto' : '100%',
+        overflow: isMobile ? 'visible' : 'hidden'
       }}>
-        <div className="p-3 d-flex flex-column h-100">
-          <div className="flex-grow-1 mb-3" style={{ minHeight:300 }}>
+        <div className={`${isMobile ? 'p-2' : 'p-3'} d-flex flex-column`} style={{ height: isMobile ? 'auto' : '100%' }}>
+          <div className={isMobile ? '' : 'flex-grow-1 mb-3'} style={{ minHeight: isMobile ? 300 : 300, maxHeight: isMobile ? 'none' : 'none' }}>
             <CodeEditor 
               code={code} 
               setCode={setCode} 
@@ -312,10 +339,10 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
               setLanguage={setLanguage} 
               onRun={runAll} 
               running={runLoading} 
-              className="h-100" 
+              className={isMobile ? '' : 'h-100'} 
             />
           </div>
-          <div className="flex-grow-1" style={{ minHeight:200, display: 'flex', flexDirection: 'column' }}>
+          <div className={isMobile ? '' : 'flex-grow-1'} style={{ minHeight: isMobile ? 200 : 200, display: 'flex', flexDirection: 'column' }}>
             <TestResults results={runResults} loading={runLoading} />
           </div>
         </div>
