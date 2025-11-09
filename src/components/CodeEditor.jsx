@@ -9,54 +9,98 @@ const LANGUAGE_OPTIONS = [
 
 export default function CodeEditor({ code, setCode, language, setLanguage, onRun, running, height = '400px', className = '' }) {
   const editorContainerRef = useRef(null)
-  const [editorHeight, setEditorHeight] = useState(400)
-  const [isMobile, setIsMobile] = useState(false)
+  const [editorHeight, setEditorHeight] = useState(() => {
+    // Initialize with viewport-based height
+    if (typeof window !== 'undefined') {
+      const mobile = window.innerWidth < 768
+      if (mobile) return 300
+      const viewportHeight = window.innerHeight
+      return Math.max(400, Math.min(600, viewportHeight * 0.5))
+    }
+    return 400
+  })
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768
+    }
+    return false
+  })
 
   useEffect(() => {
+    // Immediately set initial state
+    const mobile = window.innerWidth < 768
+    setIsMobile(mobile)
+    
+    if (mobile) {
+      setEditorHeight(300)
+    } else {
+      // Desktop: use viewport-based initial height
+      const viewportHeight = window.innerHeight
+      const initialHeight = Math.max(400, Math.min(600, viewportHeight * 0.5))
+      setEditorHeight(initialHeight)
+    }
+
     const updateEditorSize = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
       
-      if (!editorContainerRef.current) return
-      
-      const container = editorContainerRef.current
-      const rect = container.getBoundingClientRect()
-      
-      // Set fixed height on mobile to prevent infinite scroll
       if (mobile) {
-        setEditorHeight(300) // Fixed height for mobile
-      } else if (rect.height > 0) {
-        // Use container height on desktop
-        const newHeight = Math.max(300, rect.height - 10)
-        setEditorHeight(newHeight)
+        setEditorHeight(300)
+      } else {
+        // For desktop, try to get container height
+        if (editorContainerRef.current) {
+          const container = editorContainerRef.current
+          const rect = container.getBoundingClientRect()
+          
+          if (rect.height > 100) {
+            // Container has a valid height
+            setEditorHeight(Math.max(400, rect.height - 10))
+          }
+        } else {
+          // Fallback to viewport calculation
+          const viewportHeight = window.innerHeight
+          const estimatedHeight = Math.max(400, Math.min(600, viewportHeight * 0.5))
+          setEditorHeight(estimatedHeight)
+        }
       }
     }
 
-    // Initial check after component mounts
-    updateEditorSize()
+    // Update after a short delay to allow DOM to settle
+    const timeoutId = setTimeout(updateEditorSize, 100)
     window.addEventListener('resize', updateEditorSize)
 
     return () => {
+      clearTimeout(timeoutId)
       window.removeEventListener('resize', updateEditorSize)
     }
   }, [])
 
-  // Separate effect for ResizeObserver after ref is available
+  // Separate effect for ResizeObserver after ref is available (desktop only)
   useEffect(() => {
-    if (!editorContainerRef.current || isMobile) return
-
-    const resizeObserver = new ResizeObserver(() => {
+    if (isMobile) return
+    
+    let resizeObserver = null
+    
+    // Wait a bit for ref to be available
+    const timeoutId = setTimeout(() => {
       if (!editorContainerRef.current) return
-      const rect = editorContainerRef.current.getBoundingClientRect()
-      if (rect.height > 0 && !isMobile) {
-        setEditorHeight(Math.max(300, rect.height - 10))
-      }
-    })
 
-    resizeObserver.observe(editorContainerRef.current)
+      resizeObserver = new ResizeObserver(() => {
+        if (!editorContainerRef.current || isMobile) return
+        const rect = editorContainerRef.current.getBoundingClientRect()
+        if (rect.height > 100) {
+          setEditorHeight(Math.max(400, rect.height - 10))
+        }
+      })
+
+      resizeObserver.observe(editorContainerRef.current)
+    }, 200)
 
     return () => {
-      resizeObserver.disconnect()
+      clearTimeout(timeoutId)
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
     }
   }, [isMobile])
 
@@ -85,13 +129,15 @@ export default function CodeEditor({ code, setCode, language, setLanguage, onRun
 
       <div 
         ref={editorContainerRef}
-        className="card-body p-0 flex-grow-1" 
+        className="card-body p-0" 
         style={{ 
-          minHeight: isMobile ? `${editorHeight}px` : 0,
-          maxHeight: isMobile ? `${editorHeight}px` : 'none',
-          height: isMobile ? `${editorHeight}px` : '100%',
+          minHeight: `${editorHeight}px`,
+          height: `${editorHeight}px`,
           overflow: 'hidden',
-          position: 'relative'
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: '#1e1e1e'
         }}
       >
         <Editor
@@ -121,7 +167,20 @@ export default function CodeEditor({ code, setCode, language, setLanguage, onRun
             renderWhitespace: isMobile ? 'none' : 'selection',
             lineNumbersMinChars: isMobile ? 2 : 3
           }}
-          loading={<div style={{ padding: '20px', textAlign: 'center' }}>Loading editor...</div>}
+          loading={
+            <div style={{ 
+              padding: '20px', 
+              textAlign: 'center',
+              height: `${editorHeight}px`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#1e1e1e',
+              color: '#cccccc'
+            }}>
+              Loading editor...
+            </div>
+          }
         />
       </div>
     </div>

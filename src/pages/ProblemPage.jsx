@@ -330,8 +330,16 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
         height: isMobile ? 'auto' : '100%',
         overflow: isMobile ? 'visible' : 'hidden'
       }}>
-        <div className={`${isMobile ? 'p-2' : 'p-3'} d-flex flex-column`} style={{ height: isMobile ? 'auto' : '100%' }}>
-          <div className={isMobile ? '' : 'flex-grow-1 mb-3'} style={{ minHeight: isMobile ? 300 : 300, maxHeight: isMobile ? 'none' : 'none' }}>
+        <div className={`${isMobile ? 'p-2' : 'p-3'} d-flex flex-column`} style={{ 
+          height: isMobile ? 'auto' : '100%',
+          minHeight: isMobile ? 'auto' : '600px'
+        }}>
+          <div className={isMobile ? 'mb-3' : 'flex-grow-1 mb-3'} style={{ 
+            minHeight: isMobile ? '300px' : '400px',
+            height: isMobile ? 'auto' : 'auto',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
             <CodeEditor 
               code={code} 
               setCode={setCode} 
@@ -339,10 +347,14 @@ console.log("Current time:", new Date().toLocaleTimeString());`)
               setLanguage={setLanguage} 
               onRun={runAll} 
               running={runLoading} 
-              className={isMobile ? '' : 'h-100'} 
+              className="" 
             />
           </div>
-          <div className={isMobile ? '' : 'flex-grow-1'} style={{ minHeight: isMobile ? 200 : 200, display: 'flex', flexDirection: 'column' }}>
+          <div className={isMobile ? '' : 'flex-grow-1'} style={{ 
+            minHeight: isMobile ? '200px' : '200px', 
+            display: 'flex', 
+            flexDirection: 'column' 
+          }}>
             <TestResults results={runResults} loading={runLoading} />
           </div>
         </div>
