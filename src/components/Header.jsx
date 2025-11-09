@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 export default function Header() {
   const { user, signOut } = useAuth()
   const { isDark, toggleTheme } = useTheme()
-
   return (
     <nav className={`navbar navbar-expand-lg ${isDark ? 'navbar-dark bg-dark' : 'navbar-light bg-light border-bottom'}`}>
       <div className="container-fluid">
@@ -17,8 +16,7 @@ export default function Header() {
           <Link className={`nav-link ${isDark ? 'text-light' : 'text-dark'}`} to="/">
             <i className="fas fa-list me-1"></i>Problems
           </Link>
-
-          <button
+          <button 
             className="btn border-0 position-relative"
             onClick={toggleTheme}
             title={`Switch to ${isDark ? 'light' : 'dark'} mode`}

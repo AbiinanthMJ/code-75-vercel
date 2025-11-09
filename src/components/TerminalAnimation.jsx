@@ -22,28 +22,22 @@ export default function TerminalAnimation({ steps = [], intervalMs = 1000 }) {
   }, [playing, steps.length, intervalMs, speed])
 
   useEffect(() => () => clearInterval(timerRef.current), [])
-
   const step = steps[idx] || {}
-
   const renderedArray = useMemo(() => {
     if (!step.array) return null
     const hl = new Set(step.highlight || [])
     return `[ ${step.array.map((v, i) => hl.has(i) ? `[${v}]` : v).join(' ')} ]`
   }, [step.array, step.highlight])
-
   const renderedList = useMemo(() => {
     if (typeof step.list === 'string') return step.list
     if (Array.isArray(step.list)) return step.list.join(' -> ') + ' -> null'
     return null
   }, [step.list])
-
   const renderedTree = typeof step.tree === 'string' ? step.tree : null
-
   const reset = () => { setIdx(0); setPlaying(false) }
   const next = () => setIdx(i => Math.min(i + 1, steps.length - 1))
   const prev = () => setIdx(i => Math.max(i - 1, 0))
   const restart = () => { setIdx(0); setPlaying(true) }
-
   return (
     <div>
       <div className="d-flex gap-2 mb-2 flex-wrap">

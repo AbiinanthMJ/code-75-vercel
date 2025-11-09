@@ -12,7 +12,7 @@ export default function CodeEditor({ code, setCode, language, setLanguage, onRun
         <select
           className="form-select form-select-sm"
           value={language}
-          onChange={e => setLanguage(e.target.value)}
+          onChange={(e) => setLanguage(e.target.value)}
         >
           {LANGUAGE_OPTIONS.map(l => (
             <option key={l.value} value={l.value}>{l.label}</option>
@@ -23,7 +23,6 @@ export default function CodeEditor({ code, setCode, language, setLanguage, onRun
           {running ? 'Running…' : 'Run Code'}
         </button>
       </div>
-
       <div className="card-body p-0 flex-grow-1" style={{ minHeight: 0 }}>
         <Editor
           height="120%"

@@ -1,24 +1,19 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
-
   const { signIn, signUp } = useAuth()
   const navigate = useNavigate()
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!email || !password) return setError('Please fill in all fields')
-
     setLoading(true)
     setError('')
-
     try {
       const { error } = isSignUp 
         ? await signUp(email, password)
